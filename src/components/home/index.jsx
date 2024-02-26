@@ -1,7 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./Home.module.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+const Navigate = useNavigate()
+  useEffect(() => {
+    if(!localStorage.getItem('user')){
+      Navigate('/login')
+    }
+  })
   return (
     <div className={styles.container}>
       <div className={styles.content}>

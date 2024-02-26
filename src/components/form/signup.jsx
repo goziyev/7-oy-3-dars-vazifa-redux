@@ -1,10 +1,14 @@
 import React, { useState, useRef } from "react";
 import "./index.css"; // Agar stil fayli mavjud bo'lsa
+import Loader from "../loader";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+  const [loader, setLoader] = useState(false);
   const loginRef = useRef();
   const passwordRef = useRef();
   const usernameRef = useRef();
+  const Navigate = useNavigate();
   function validate() {
     if (!loginRef.current.value.trim().length) {
       alert("username kiritilishi shart !!!");
@@ -30,12 +34,13 @@ const SignUp = () => {
   const handleSignupSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
+      setLoader(true);
       const user = {
         username: usernameRef.current.value,
         email: loginRef.current.value,
         password: passwordRef.current.value,
       };
-      fetch("https://auth-rg69.onrender.com/api/auth/signin", {
+      fetch("https://auth-rg69.onrender.com/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,16 +49,22 @@ const SignUp = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
+          if (data.message == "User registered successfully!") {
+            Navigate("/login");
+          }
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          setLoader(false);
         });
     }
   };
 
   return (
     <div className="container">
+      {loader && <Loader loading={loader} />}
       <div className="forms">
         <div className="row">
           <div className="col-md-6 col-sm-12">
@@ -71,7 +82,7 @@ const SignUp = () => {
                     required="required"
                     ref={usernameRef}
                   />
-                  <label htmlFor="fullname">Full Name</label>
+                  <label htmlFor="fullname">Username</label>
                 </div>
                 <div className="input-container">
                   <input
@@ -98,6 +109,20 @@ const SignUp = () => {
                 <input className="btn btn-block" name="signup" type="submit" />
               </form>
             </div>
+            <span
+              style={{
+                cursor: "pointer",
+                textAlign: "center",
+                display: "block",
+                color: "blue",
+                fontWeight: "600",
+              }}
+              onClick={() => {
+                Navigate("/login");
+              }}
+            >
+              Sign In page
+            </span>
           </div>
         </div>
       </div>
